@@ -1,0 +1,89 @@
+#include "xc.h"
+#define FCY 8000000
+#include <libpic30.h>   
+#include "lcd.h"
+#include "mcc_generated_files/system.h"
+#include<stdio.h> 
+#include<stdlib.h>
+#include<string.h>
+
+
+int boton;
+int unidades;
+int decenas;
+int unidades_m;
+int decenas_m;
+int flag;
+double ver;
+char n;
+
+int main(void) {
+    AD1PCFG = 0xFFFF;
+    
+    TRISAbits.TRISA0=1;
+    TRISAbits.TRISA1=1;
+    TRISAbits.TRISA2=1;
+    TRISB = 0;
+    
+    LCD_Initialize();
+    DisplayClr();
+    // initialize the device
+    SYSTEM_Initialize();
+    TMR1_Start();
+    LCDGoto(0,0);
+    while (1){
+        if (PORTAbits.RA0 == 1){
+            if (flag == 1){
+                unidades++;
+                flag = 0;
+            }
+        }
+        if (PORTAbits.RA1 == 1){
+            if (flag == 1){
+                unidades_m++;
+                flag = 0;
+            }
+        }
+        }
+        if (PORTAbits.RA2 == 1){
+            if (flag == 1){
+                boton=!boton;
+                flag = 0;
+        }          
+        }
+        if (PORTAbits.RA2 == 0){
+            if (flag == 1){
+                boton = boton;
+                flag = 0;
+        }
+        }
+        if (boton == 1){
+            boton = 0;
+        }
+        LCDPutStr("NM=");
+        no_metales(unidades); 
+    
+   return 1;
+}
+
+void no_metales(int x){
+    if (x > 9){
+        ver = x/10;
+        n = (int)ver+'0';
+        LCDPutChar(n);
+        n=(x-(((int)ver)*10))+'0';
+        LCDPutChar('0');
+        n = (int)x+'0';
+        LCDPutChar(n);
+    }
+    else{
+        LCDPutChar('0');
+        n=(int)x+'0';
+        LCDPutChar(n);
+    }
+}
+
+void TMR1_CallBack(void){
+    flag = 1;
+    _T1IF=0;
+}
