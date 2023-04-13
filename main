@@ -1,21 +1,21 @@
+/* 
+ * File:   main.c
+ * Author: Camilo
+ *
+ * Created on 28 de Marzo de 2023, 12:37 PM
+ */
+
+#include <stdio.h>
 #include "xc.h"
 #define FCY 8000000
 #include <libpic30.h>   
 #include "lcd.h"
-#include "mcc_generated_files/system.h"
-#include<stdio.h> 
-#include<stdlib.h>
-#include<string.h>
 
-
-int boton;
-int unidades;
-int decenas;
-int unidades_m;
-int decenas_m;
-int flag;
-double ver;
+int no_metales;
+int metales;
+double aux;
 char n;
+int boton;
 
 int main(void) {
     AD1PCFG = 0xFFFF;
@@ -27,63 +27,121 @@ int main(void) {
     
     LCD_Initialize();
     DisplayClr();
-    // initialize the device
-    SYSTEM_Initialize();
-    TMR1_Start();
-    LCDGoto(0,0);
-    while (1){
+    while(1){
         if (PORTAbits.RA0 == 1){
-            if (flag == 1){
-                unidades++;
-                flag = 0;
-            }
+            no_metales++;
         }
         if (PORTAbits.RA1 == 1){
-            if (flag == 1){
-                unidades_m++;
-                flag = 0;
-            }
-        }
+            metales++;
         }
         if (PORTAbits.RA2 == 1){
-            if (flag == 1){
-                boton=!boton;
-                flag = 0;
-        }          
+            boton = !boton;
         }
-        if (PORTAbits.RA2 == 0){
-            if (flag == 1){
-                boton = boton;
-                flag = 0;
-        }
-        }
-        if (boton == 1){
-            boton = 0;
-        }
+        LCDGoto(0,0);
         LCDPutStr("NM=");
-        no_metales(unidades); 
-    
-   return 1;
+        LCD_NOMETALES(no_metales);
+        LCDGoto(6,0);
+        LCDPutStr("MT=");
+        LCD_METALES(metales);
+        LCDGoto(12,0);
+        LCDPutStr("W=");
+        LCD_WHITE();
+        LCDGoto(0,1);
+        LCDPutStr("CR=");
+        LCD_RED();
+        LCDGoto(6,1);
+        LCDPutStr("CG=");
+        LCD_GREEN();
+        LCDGoto(12,1);
+        LCDPutStr("B=");
+        LCD_BLUE();
+    }
+    return 1;
 }
 
-void no_metales(int x){
-    if (x > 9){
-        ver = x/10;
-        n = (int)ver+'0';
+void LCD_NOMETALES(int x){
+    if (x>9){
+        aux=x/10;
+        n=(int)aux+'0';
         LCDPutChar(n);
-        n=(x-(((int)ver)*10))+'0';
-        LCDPutChar('0');
-        n = (int)x+'0';
+        n=(x-(((int)aux)*10))+'0';
         LCDPutChar(n);
     }
     else{
         LCDPutChar('0');
-        n=(int)x+'0';
+        n = (int)x +'0';
+        LCDPutChar(n);
+    }   
+}
+    
+
+void LCD_METALES(int x){
+    if (x>9){
+        aux=x/10;
+        n=(int)aux+'0';
+        LCDPutChar(n);
+        n=(x-(((int)aux)*10))+'0';
         LCDPutChar(n);
     }
+    else{
+        LCDPutChar('0');
+        n = (int)x +'0';
+        LCDPutChar(n);
+    }    
 }
 
-void TMR1_CallBack(void){
-    flag = 1;
-    _T1IF=0;
+void LCD_WHITE(int x){
+    if (x>9){
+    aux=x/10;
+    n=(int)aux+'0';
+    LCDPutChar(n);
+    n=(x-(((int)aux)*10))+'0';
+    LCDPutChar(n);
+    }
+    else{
+    LCDPutChar('0');
+    n = (int)x +'0';
+    LCDPutChar(n);}
+}
+
+void LCD_RED(int x){
+    if (x>9){
+    aux=x/10;
+    n=(int)aux+'0';
+    LCDPutChar(n);
+    n=(x-(((int)aux)*10))+'0';
+    LCDPutChar(n);
+    }
+    else{
+    LCDPutChar('0');
+    n = (int)x +'0';
+    LCDPutChar(n);}
+}
+
+void LCD_GREEN(int x){
+    if (x>9){
+    aux=x/10;
+    n=(int)aux+'0';
+    LCDPutChar(n);
+    n=(x-(((int)aux)*10))+'0';
+    LCDPutChar(n);
+    }
+    else{
+    LCDPutChar('0');
+    n = (int)x +'0';
+    LCDPutChar(n);}
+}
+
+void LCD_BLUE(int x){
+    if (x>9){
+    aux=x/10;
+    n=(int)aux+'0';
+    LCDPutChar(n);
+    n=(x-(((int)aux)*10))+'0';
+    LCDPutChar(n);
+    }
+    else{
+    LCDPutChar('0');
+    n = (int)x +'0';
+    LCDPutChar(n);}
 }
